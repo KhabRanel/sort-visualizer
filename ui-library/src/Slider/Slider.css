@@ -1,0 +1,11 @@
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  min-width: 160px;
+}
+
+.slider__label {
+  color: #4b5563;
+}

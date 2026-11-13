@@ -1,0 +1,20 @@
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 110px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #f3f4f6;
+}
+
+.stat__value {
+  font-size: 22px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.stat__label {
+  font-size: 13px;
+  color: #6b7280;
+}

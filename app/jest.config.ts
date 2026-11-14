@@ -7,6 +7,8 @@ const config = {
   },
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    // в тестах библиотека берётся из исходников, а не из ESM-сборки dist
+    '^@sort-visualizer/ui-library$': '<rootDir>/../ui-library/src/index.ts',
   },
   // Specify file extensions Jest should look for
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],

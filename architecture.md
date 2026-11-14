@@ -50,14 +50,22 @@ sort-visualizer/
         ├── algorithms/
         │   ├── types.ts       # типы: AlgorithmInfo, SortStep, SortFunction
         │   ├── registry.ts    # список алгоритмов и их характеристики
+        │   ├── StepRecorder.ts # помощник: копия массива, счётчики, создание шагов
+        │   ├── bubbleSort.ts, selectionSort.ts, insertionSort.ts,
+        │   ├── mergeSort.ts, quickSort.ts, heapSort.ts   # алгоритмы-генераторы
+        │   ├── algorithms.test.ts
         │   └── registry.test.ts
+        ├── hooks/
+        │   ├── useSortAnimation.ts       # проигрыватель шагов (старт, пауза, шаг, сброс)
+        │   └── useSortAnimation.test.ts
         ├── utils/
         │   ├── generateArray.ts      # генерация массивов разного вида
-        │   └── generateArray.test.ts
+        │   ├── barStates.ts          # шаг алгоритма -> цвета столбцов
+        │   └── *.test.ts
         ├── components/
         │   ├── Layout/Layout.tsx
         │   ├── Header/Header.tsx
-        │   ├── ControlPanel/ControlPanel.tsx
+        │   ├── ControlPanel/ControlPanel.tsx, ControlPanel.test.tsx
         │   ├── StepCounters/StepCounters.tsx
         │   └── ComparisonTable/ComparisonTable.tsx
         └── pages/
@@ -134,9 +142,20 @@ sort-visualizer/
 | `VisualizerPage` | Пошаговая визуализация выбранного алгоритма |
 | `ComparePage` | Сравнение производительности всех алгоритмов на одном массиве |
 | `NotFoundPage` | Страница 404 |
-| `algorithms/registry.ts` | Справочник алгоритмов: идентификатор, название, сложность, память, устойчивость. Функция `findAlgorithm` |
-| `algorithms/types.ts` | Типы `AlgorithmInfo`, `SortStep` (один шаг анимации), `SortFunction` (алгоритм как функция-генератор шагов) |
+| `algorithms/registry.ts` | Справочник алгоритмов: идентификатор, название, сложность, память, устойчивость и функция сортировки. Функция `findAlgorithm` |
+| `algorithms/types.ts` | Типы `AlgorithmInfo`, `SortStep` (один шаг анимации: тип, индексы элементов, состояние массива, отсортированные элементы, счётчики), `SortFunction` (алгоритм как функция-генератор шагов) |
+| `algorithms/StepRecorder.ts` | Класс-помощник для алгоритмов: работает с копией массива, выполняет сравнение, обмен и запись, считает операции и создаёт объекты `SortStep` |
+| `algorithms/*Sort.ts` | Шесть алгоритмов сортировки. Каждый оформлен как функция-генератор, которая через `yield` возвращает шаги |
+| `hooks/useSortAnimation.ts` | Хук-проигрыватель. Получает готовый список шагов и скорость, по таймеру переходит к следующему шагу. Возвращает текущий шаг и функции `play`, `pause`, `step`, `reset` |
 | `utils/generateArray.ts` | Генерация массива заданного размера и вида: случайный, отсортированный, обратный, почти отсортированный |
+| `utils/barStates.ts` | Преобразует шаг алгоритма в состояния столбцов для `ArrayBars`: сравнение, перестановка, на своём месте |
+
+### Как работает пошаговая анимация
+
+1. `VisualizerPage` хранит исходный массив. При его изменении вызывается `algorithm.sort(array)`, и все шаги собираются в список: `Array.from(generator)`.
+2. `useSortAnimation` хранит номер текущего шага. В режиме воспроизведения он увеличивает номер по `setTimeout`. Задержка зависит от скорости: `1000 / 2^(speed - 1)` мс.
+3. Текущий шаг содержит готовое состояние массива и счётчики. Страница передаёт их в `ArrayBars` и `StepCounters`, а `getBarStates` раскрашивает столбцы.
+4. Логика алгоритмов отделена от отображения: те же функции-генераторы можно запускать без анимации, например для замеров на странице сравнения.
 
 ## 4. Маршрутизация
 
@@ -176,3 +195,4 @@ sort-visualizer/
    - `StepCounters`: `Stat`;
    - `ComparePage`: `Button`, `Card`.
 5. В `app/vite.config.ts` указано `resolve.dedupe: ['react', 'react-dom']`, чтобы приложение и библиотека использовали один экземпляр React.
+6. В тестах приложения (`app/jest.config.ts`) пакет `@sort-visualizer/ui-library` сопоставлен с исходниками `ui-library/src/index.ts`. Jest не умеет загружать ESM-сборку из `dist`, а так компоненты библиотеки можно использовать в тестах приложения.

@@ -1,0 +1,27 @@
+.array-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.array-bars__bar {
+  flex: 1;
+  background-color: #93c5fd;
+  border-radius: 2px 2px 0 0;
+}
+
+.array-bars__bar--compare {
+  background-color: #f59e0b;
+}
+
+.array-bars__bar--swap {
+  background-color: #ef4444;
+}
+
+.array-bars__bar--sorted {
+  background-color: #22c55e;
+}
